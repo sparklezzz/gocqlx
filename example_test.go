@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/scylladb/gocqlx"
-	. "github.com/scylladb/gocqlx/gocqlxtest"
-	"github.com/scylladb/gocqlx/qb"
+	"github.com/sparklezzz/gocqlx"
+	. "github.com/sparklezzz/gocqlx/gocqlxtest"
+	"github.com/sparklezzz/gocqlx/qb"
 )
 
 var personSchema = `

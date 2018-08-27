@@ -16,8 +16,8 @@ import (
 	"testing"
 
 	"github.com/gocql/gocql"
-	. "github.com/scylladb/gocqlx/gocqlxtest"
-	"github.com/scylladb/gocqlx/migrate"
+	. "github.com/sparklezzz/gocqlx/gocqlxtest"
+	"github.com/sparklezzz/gocqlx/migrate"
 )
 
 var migrateSchema = `

@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx"
-	. "github.com/scylladb/gocqlx/gocqlxtest"
+	"github.com/sparklezzz/gocqlx"
+	. "github.com/sparklezzz/gocqlx/gocqlxtest"
 	"gopkg.in/inf.v0"
 )
 

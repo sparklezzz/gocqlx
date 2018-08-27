@@ -12,7 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx/reflectx"
+	"github.com/sparklezzz/gocqlx/reflectx"
 )
 
 // CompileNamedQuery compiles a named query into an unbound query using the

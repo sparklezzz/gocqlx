@@ -20,7 +20,7 @@ package main
 import (
     "context"
 
-    "github.com/scylladb/gocqlx/migrate"
+    "github.com/sparklezzz/gocqlx/migrate"
 )
 
 const dir = "./cql" 

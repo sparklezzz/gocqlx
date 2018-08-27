@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/gocql/gocql"
-	"github.com/scylladb/gocqlx"
+	"github.com/sparklezzz/gocqlx"
 )
 
 func BenchmarkCompileNamedQuery(b *testing.B) {
