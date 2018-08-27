@@ -76,7 +76,7 @@ func TestBindStruct(t *testing.T) {
 
 	t.Run("simple", func(t *testing.T) {
 		names := []string{"name", "age", "first", "last"}
-		args, err := bindStructArgs(names, v, nil, DefaultMapper)
+		args, err := bindStructArgs(names, v, nil, DefaultMapper, false)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -88,7 +88,7 @@ func TestBindStruct(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		names := []string{"name", "age", "first", "not_found"}
-		_, err := bindStructArgs(names, v, nil, DefaultMapper)
+		_, err := bindStructArgs(names, v, nil, DefaultMapper, false)
 		if err == nil {
 			t.Fatal("unexpected error")
 		}
@@ -99,7 +99,7 @@ func TestBindStruct(t *testing.T) {
 		m := map[string]interface{}{
 			"not_found": "last",
 		}
-		args, err := bindStructArgs(names, v, m, DefaultMapper)
+		args, err := bindStructArgs(names, v, m, DefaultMapper, false)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -114,7 +114,7 @@ func TestBindStruct(t *testing.T) {
 		m := map[string]interface{}{
 			"not_found": "last",
 		}
-		_, err := bindStructArgs(names, v, m, DefaultMapper)
+		_, err := bindStructArgs(names, v, m, DefaultMapper, false)
 		if err == nil {
 			t.Fatal("unexpected error")
 		}

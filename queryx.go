@@ -98,8 +98,8 @@ func Query(q *gocql.Query, names []string) *Queryx {
 
 // BindStruct binds query named parameters to values from arg using mapper. If
 // value cannot be found error is reported.
-func (q *Queryx) BindStruct(arg interface{}) *Queryx {
-	arglist, err := bindStructArgs(q.Names, arg, nil, q.Mapper)
+func (q *Queryx) BindStruct(arg interface{}, ignoreNulls bool) *Queryx {
+	arglist, err := bindStructArgs(q.Names, arg, nil, q.Mapper, ignoreNulls)
 	if err != nil {
 		q.err = fmt.Errorf("bind error: %s", err)
 	} else {
@@ -113,8 +113,8 @@ func (q *Queryx) BindStruct(arg interface{}) *Queryx {
 // BindStructMap binds query named parameters to values from arg0 and arg1
 // using a mapper. If value cannot be found in arg0 it's looked up in arg1
 // before reporting an error.
-func (q *Queryx) BindStructMap(arg0 interface{}, arg1 map[string]interface{}) *Queryx {
-	arglist, err := bindStructArgs(q.Names, arg0, arg1, q.Mapper)
+func (q *Queryx) BindStructMap(arg0 interface{}, arg1 map[string]interface{}, ignoreNulls bool) *Queryx {
+	arglist, err := bindStructArgs(q.Names, arg0, arg1, q.Mapper, ignoreNulls)
 	if err != nil {
 		q.err = fmt.Errorf("bind error: %s", err)
 	} else {
@@ -125,7 +125,7 @@ func (q *Queryx) BindStructMap(arg0 interface{}, arg1 map[string]interface{}) *Q
 	return q
 }
 
-func bindStructArgs(names []string, arg0 interface{}, arg1 map[string]interface{}, m *reflectx.Mapper) ([]interface{}, error) {
+func bindStructArgs(names []string, arg0 interface{}, arg1 map[string]interface{}, m *reflectx.Mapper, ignoreNulls bool) ([]interface{}, error) {
 	arglist := make([]interface{}, 0, len(names))
 
 	// grab the indirected value of arg
@@ -137,13 +137,35 @@ func bindStructArgs(names []string, arg0 interface{}, arg1 map[string]interface{
 	err := m.TraversalsByNameFunc(v.Type(), names, func(i int, t []int) error {
 		if len(t) != 0 {
 			val := reflectx.FieldByIndexesReadOnly(v, t)
-			arglist = append(arglist, val.Interface())
+
+			if ignoreNulls {
+				// detects (*T)(nil) cases and replace nil ptr with unsetValue
+				// see https://stackoverflow.com/questions/13476349/check-for-nil-and-nil-interface-in-go
+				c := val.Interface()
+				if c == nil || (reflect.ValueOf(c).Kind() == reflect.Ptr && reflect.ValueOf(c).IsNil()) {
+					arglist = append(arglist, gocql.UnsetValue)
+				} else {
+					arglist = append(arglist, c)
+				}
+			} else {
+				arglist = append(arglist, val.Interface())
+			}
 		} else {
 			val, ok := arg1[names[i]]
 			if !ok {
 				return fmt.Errorf("could not find name %q in %#v and %#v", names[i], arg0, arg1)
 			}
-			arglist = append(arglist, val)
+
+			if ignoreNulls {
+				c := val
+				if c == nil || (reflect.ValueOf(c).Kind() == reflect.Ptr && reflect.ValueOf(c).IsNil()) {
+					arglist = append(arglist, gocql.UnsetValue)
+				} else {
+					arglist = append(arglist, c)
+				}
+			} else {
+				arglist = append(arglist, val)
+			}
 		}
 
 		return nil
